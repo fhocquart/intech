@@ -88,21 +88,19 @@ data "aws_ami" "ubuntu" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
-# Create an EC2 instance
+
+# Create an EC2 instance with detailed monitoring enabled
 resource "aws_instance" "intech_instance" {
   ami             = data.aws_ami.ubuntu.id
-  instance_type   = "t2.micro" # You can adjust the instance type if needed
+  instance_type   = var.instance_type
   subnet_id       = aws_subnet.intech_public_subnet.id
-  vpc_security_group_ids = [aws_security_group.intech_sg.id] # Use security group ID instead of name
-  key_name        = "CM_keypair" # Your keypair name
+  vpc_security_group_ids = [aws_security_group.intech_sg.id]
+  key_name        = var.key_pair
+  monitoring      = true  # Enable detailed monitoring
 
   tags = {
     Name = "intech-ubuntu-instance"
   }
 }
 
-# Output the public IP address of the EC2 instance
-output "ec2_public_ip" {
-  value = aws_instance.intech_instance.public_ip
-  description = "The public IP of the EC2 instance"
-}
+
